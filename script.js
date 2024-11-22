@@ -97,7 +97,7 @@ function updatePlayerSearch() {
     }
 }
 
-// 日付検索セレクトボックスの更新（固定の1日目から4日目まで）
+// 日付検索セレクトボックスの更新
 function updateDaySearch() {
     const daySearch = document.getElementById('day-search');
     if (daySearch) {
@@ -194,22 +194,13 @@ document.getElementById('match-form').addEventListener('submit', function(e) {
     // 部屋名の取得と日付の抽出
     const roomNameInput = document.getElementById('room-name');
     const roomName = roomNameInput.value.trim();
-    if (!/^\d+[A-Za-z]$/.test(roomName)) {
-        alert('部屋名は「数字+アルファベット」の形式で入力してください（例: 1A, 2B）。');
-        return;
-    }
-    const day = parseInt(roomName.match(/^\d+/)[0]);
-    if (isNaN(day) || day < 1 || day > 4) {
-        alert('日付は1日目から4日目までで入力してください。');
-        return;
-    }
 
-    // プレイヤーAとBのカー順位を取得
+    // プレイヤーAとBの順位を取得
     const aPositions = selectedPositions.A;
     const bPositions = selectedPositions.B;
 
     if (aPositions.includes(null) || bPositions.includes(null)) {
-        alert('プレイヤーAとBの全てのカー順位を選択してください。');
+        alert('プレイヤーAとBの全ての順位を選択してください。');
         return;
     }
 
