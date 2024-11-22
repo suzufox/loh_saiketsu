@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>loh対戦管理</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>loh対戦管理</h1>
+
+    <!-- ユーザー登録セクション -->
+    <div id="user-registration-section">
+        <h2>ユーザー登録</h2>
+        <form id="user-form">
+            <div class="form-group">
+                <label for="user-name">ユーザー名:</label>
+                <input type="text" id="user-name" required placeholder="例: 山田太郎">
+            </div>
+            <button type="submit">登録</button>
+        </form>
+    </div>
+
+    <!-- 入力セクション -->
+    <div id="input-section">
+        <h2>対戦結果の入力</h2>
+        <form id="match-form">
+            <div class="form-group">
+                <label for="room-name">部屋名:</label>
+                <input type="text" id="room-name" required placeholder="例: 1A, 2B">
+            </div>
+
+            <h3>プレイヤーA</h3>
+            <div class="form-group">
+                <label for="player-a-name">名義:</label>
+                <select id="player-a-name" required>
+                    <option value="">選択してください</option>
+                    <!-- プレイヤー名のオプションがここに挿入されます -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>1頭目の着順 (1-6):</label>
+                <div id="a-car1-buttons" class="position-buttons">
+                    <!-- 1頭目の順位ボタンがここに挿入されます -->
+                </div>
+                <span id="A-car1-selected">未選択</span>
+            </div>
+            <div class="form-group">
+                <label>2頭目の着順 (1-6):</label>
+                <div id="a-car2-buttons" class="position-buttons">
+                    <!-- 2頭目の順位ボタンがここに挿入されます -->
+                </div>
+                <span id="A-car2-selected">未選択</span>
+            </div>
+            <div class="form-group">
+                <label>3頭目の着順 (1-6):</label>
+                <div id="a-car3-buttons" class="position-buttons">
+                    <!-- 3頭目の順位ボタンがここに挿入されます -->
+                </div>
+                <span id="A-car3-selected">未選択</span>
+            </div>
+
+            <h3>プレイヤーB</h3>
+            <div class="form-group">
+                <label for="player-b-name">名義:</label>
+                <select id="player-b-name" required>
+                    <option value="">選択してください</option>
+                    <!-- プレイヤー名のオプションがここに挿入されます -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label>1頭目の着順 (1-6):</label>
+                <div id="b-car1-buttons" class="position-buttons">
+                    <!-- 1頭目の順位ボタンがここに挿入されます -->
+                </div>
+                <span id="B-car1-selected">未選択</span>
+            </div>
+            <div class="form-group">
+                <label>2頭目の着順 (1-6):</label>
+                <div id="b-car2-buttons" class="position-buttons">
+                    <!-- 2頭目の順位ボタンがここに挿入されます -->
+                </div>
+                <span id="B-car2-selected">未選択</span>
+            </div>
+            <div class="form-group">
+                <label>3頭目の着順 (1-6):</label>
+                <div id="b-car3-buttons" class="position-buttons">
+                    <!-- 3頭目の順位ボタンがここに挿入されます -->
+                </div>
+                <span id="B-car3-selected">未選択</span>
+            </div>
+
+            <button type="submit">追加</button>
+        </form>
+    </div>
+
+    <!-- ランキングセクション -->
+    <div id="ranking-section">
+        <h2>ランキング表</h2>
+        <table id="ranking-table">
+            <thead>
+                <tr>
+                    <th>順位</th>
+                    <th>名義</th>
+                    <th>勝数</th>
+                    <th>敗数</th>
+                    <th>総対戦数</th>
+                    <th>総合ポイント</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ランキングデータがここに挿入されます -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 各日のランキングセクション -->
+    <div id="daily-ranking-section">
+        <h2>各日のランキング表</h2>
+        <div id="daily-rankings">
+            <!-- 各日のランキングデータがここに挿入されます -->
+        </div>
+    </div>
+
+    <!-- 対戦結果一覧 -->
+    <div id="matches-section">
+        <h2>対戦結果一覧</h2>
+        <table id="matches-table">
+            <thead>
+                <tr>
+                    <th>部屋名</th>
+                    <th>プレイヤーA</th>
+                    <th>プレイヤーB</th>
+                    <th>プレイヤーAポイント</th>
+                    <th>プレイヤーBポイント</th>
+                    <th>勝者</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 対戦結果データがここに挿入されます -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 検索機能 -->
+    <div id="search-section">
+        <h2>対戦結果検索</h2>
+        <div class="form-group">
+            <label for="player-search">プレイヤー名で検索:</label>
+            <select id="player-search">
+                <option value="">全てのプレイヤー</option>
+                <!-- プレイヤー名のオプションがここに挿入されます -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="day-search">日付で検索:</label>
+            <select id="day-search">
+                <option value="">全ての日</option>
+                <option value="1">1日目</option>
+                <option value="2">2日目</option>
+                <option value="3">3日目</option>
+                <option value="4">4日目</option>
+            </select>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
