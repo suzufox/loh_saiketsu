@@ -25,6 +25,7 @@ window.onload = function() {
     updateMatchesTable();
     setupUserRegistration();
     setupToggleDailyRankings();
+    setupSearchFilters(); // 検索フィルターのセットアップを追加
 }
 
 // ユーザー登録フォームのセットアップ
@@ -101,26 +102,24 @@ function updatePlayerSearch() {
 function updateDaySearch() {
     const daySearch = document.getElementById('day-search');
     if (daySearch) {
-        // 現在のオプションを維持しつつ必要な日付を追加
-        // ここでは既に1日目から4日目までのオプションがHTMLに存在するため、特に操作は不要
-        // 将来的に動的に日付を追加する場合はここにコードを追加
+        // 必要に応じて日付のオプションを追加
     }
 }
 
-// カー順位選択ボタンのセットアップ
+// ウマ娘順位選択ボタンのセットアップ
 function setupCarPositionButtons() {
-    // プレイヤーAのカー1
+    // プレイヤーAのウマ娘
     setupSingleCarPositionButtons('A', 0, 'a-car1-buttons');
     setupSingleCarPositionButtons('A', 1, 'a-car2-buttons');
     setupSingleCarPositionButtons('A', 2, 'a-car3-buttons');
 
-    // プレイヤーBのカー1
+    // プレイヤーBのウマ娘
     setupSingleCarPositionButtons('B', 0, 'b-car1-buttons');
     setupSingleCarPositionButtons('B', 1, 'b-car2-buttons');
     setupSingleCarPositionButtons('B', 2, 'b-car3-buttons');
 }
 
-// 各カー順位選択ボタンのセットアップ関数
+// 各ウマ娘順位選択ボタンのセットアップ関数
 function setupSingleCarPositionButtons(playerType, carIndex, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -138,33 +137,41 @@ function setupSingleCarPositionButtons(playerType, carIndex, containerId) {
     }
 }
 
-// カー順位選択時の処理
+// ウマ娘順位選択時の処理
 function handlePositionSelection(playerType, carIndex, position, containerId) {
-    // Check if the position is already selected for this player
+    // 既に同じ順位が選択されていないか確認
+    if (selectedPositions[playerType].includes(position)) {
+        alert('同じプレイヤー内で同じ順位を選択することはできません。');
+        return;
+    }
 
-
-    // Assign the position
+    // 位置を割り当て
     selectedPositions[playerType][carIndex] = position;
     updatePositionButtons(playerType, carIndex, containerId);
 }
 
-// カー順位選択ボタンの更新
+// ウマ娘順位選択ボタンの更新
 function updatePositionButtons(playerType, carIndex, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const buttons = container.querySelectorAll('button.position-button');
     buttons.forEach(button => {
         const pos = parseInt(button.dataset.position);
-        if (selectedPositions[playerType].includes(pos)) {
-            button.disabled = true;
+        if (selectedPositions[playerType][carIndex] === pos) {
             button.classList.add('selected');
         } else {
-            button.disabled = false;
             button.classList.remove('selected');
+        }
+
+        // 同じプレイヤー内で既に選択されている順位は無効化
+        if (selectedPositions[playerType].includes(pos) && selectedPositions[playerType][carIndex] !== pos) {
+            button.disabled = true;
+        } else {
+            button.disabled = false;
         }
     });
 
-    // Display the selected position
+    // 選択された順位を表示
     const displaySpan = document.getElementById(`${playerType}-car${carIndex + 1}-selected`);
     if (displaySpan) {
         displaySpan.textContent = selectedPositions[playerType][carIndex] ? `選択済み: ${selectedPositions[playerType][carIndex]}` : '未選択';
@@ -195,6 +202,13 @@ document.getElementById('match-form').addEventListener('submit', function(e) {
     const roomNameInput = document.getElementById('room-name');
     const roomName = roomNameInput.value.trim();
 
+    // 日付を抽出
+    let day = parseInt(roomName.charAt(0), 10);
+    if (isNaN(day) || day < 1 || day > 4) {
+        alert('部屋名の最初の文字から日付を取得できませんでした。1-4の日付を表す数字が必要です。');
+        return;
+    }
+
     // プレイヤーAとBの順位を取得
     const aPositions = selectedPositions.A;
     const bPositions = selectedPositions.B;
@@ -203,8 +217,6 @@ document.getElementById('match-form').addEventListener('submit', function(e) {
         alert('プレイヤーAとBの全ての順位を選択してください。');
         return;
     }
-
-
 
     // ポイント計算
     const aPoints = calculatePoints(aPositions);
@@ -529,12 +541,6 @@ function editMatch(id) {
     const roomNameInput = document.getElementById('room-name');
     const playerASelect = document.getElementById('player-a-name');
     const playerBSelect = document.getElementById('player-b-name');
-    const aCar1Buttons = document.getElementById('a-car1-buttons');
-    const aCar2Buttons = document.getElementById('a-car2-buttons');
-    const aCar3Buttons = document.getElementById('a-car3-buttons');
-    const bCar1Buttons = document.getElementById('b-car1-buttons');
-    const bCar2Buttons = document.getElementById('b-car2-buttons');
-    const bCar3Buttons = document.getElementById('b-car3-buttons');
 
     if (!roomNameInput || !playerASelect || !playerBSelect) return;
 
@@ -542,19 +548,9 @@ function editMatch(id) {
     playerASelect.value = match.playerAName;
     playerBSelect.value = match.playerBName;
 
-    // リセット選択
-    selectedPositions.A = [null, null, null];
-    selectedPositions.B = [null, null, null];
+    // 選択をリセット
+    resetSelectedPositions();
     resetPositionDisplays();
-
-    // 各カーの選択を設定
-    selectedPositions.A[0] = getPositionFromPoints(match.playerAPoints);
-    selectedPositions.A[1] = getPositionFromPoints(match.playerAPoints);
-    selectedPositions.A[2] = getPositionFromPoints(match.playerAPoints);
-
-    selectedPositions.B[0] = getPositionFromPoints(match.playerBPoints);
-    selectedPositions.B[1] = getPositionFromPoints(match.playerBPoints);
-    selectedPositions.B[2] = getPositionFromPoints(match.playerBPoints);
 
     // ボタンの状態を更新
     updatePositionButtons('A', 0, 'a-car1-buttons');
@@ -568,6 +564,9 @@ function editMatch(id) {
     matches = matches.filter(m => m.id !== id);
 
     // プレイヤーデータの更新
+    const playerA = players.find(p => p.name === match.playerAName);
+    const playerB = players.find(p => p.name === match.playerBName);
+
     if (playerA && playerB) {
         if (match.winnerName === match.playerAName) {
             playerA.wins -= 1;
@@ -587,16 +586,6 @@ function editMatch(id) {
     updateRankingTable();
     updateDailyRankings();
     updateMatchesTable();
-}
-
-// ポイントから位置を取得する関数
-function getPositionFromPoints(points) {
-    if (points >= 100) return 1;
-    if (points >= 60) return 2;
-    if (points >= 40) return 3;
-    if (points >= 20) return 4;
-    if (points >= 10) return 5;
-    return 6;
 }
 
 // 位置選択をリセットする関数
@@ -638,4 +627,18 @@ function setupToggleDailyRankings() {
             }
         });
     });
+}
+
+// 検索フィルターのセットアップ
+function setupSearchFilters() {
+    const playerSearch = document.getElementById('player-search');
+    const daySearch = document.getElementById('day-search');
+
+    if (playerSearch) {
+        playerSearch.addEventListener('change', updateMatchesTable);
+    }
+
+    if (daySearch) {
+        daySearch.addEventListener('change', updateMatchesTable);
+    }
 }
